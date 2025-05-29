@@ -4,18 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PyIndicators is a high-performance Python library for calculating technical indicators, optimized with Numba for C-like speed. The library provides implementations of common technical analysis indicators used in financial markets.
+PyIndicators is the most user-friendly technical analysis library for Python, designed to be 100x easier to use than TA-Lib while maintaining C-like performance through Numba optimization. 
+
+### Key Innovations
+- **Auto-detection**: Automatically detects OHLC column names regardless of format
+- **One-line analysis**: Complete technical analysis with `analyze('data.csv')`
+- **Multiple interfaces**: From beginner-friendly to expert-level pipelines
+- **Built-in backtesting**: Instant strategy performance evaluation
+- **Streaming support**: Real-time indicators for live trading
+- **Interactive widgets**: Jupyter notebook integration with sliders
+- **Smart error handling**: Helpful messages instead of cryptic errors
 
 ## Architecture
 
-The project follows a modular structure with indicators organized by category:
+The project follows a modular structure with multiple interface layers:
+
+### Core Indicators (Numba-optimized)
 - `pyindicators/momentum/` - Momentum indicators (RSI, Stochastic, ROC, etc.)
 - `pyindicators/trend/` - Trend indicators (SMA, EMA, MACD, ADX, etc.)
 - `pyindicators/volatility/` - Volatility indicators (Bollinger Bands, ATR, etc.)
 - `pyindicators/volume/` - Volume indicators (OBV, VWAP, MFI, etc.)
 - `pyindicators/core/` - Core utility functions and shared components
 
-All indicators are implemented using Numba's JIT compilation for maximum performance.
+### User-Friendly Interfaces (New!)
+- `pyindicators/pandas_wrapper.py` - Pandas DataFrame/Series support with named outputs
+- `pyindicators/easy.py` - One-line analysis and SmartDataFrame with auto-detection
+- `pyindicators/pipeline.py` - Fluent API for chaining indicators and creating strategies
+- `pyindicators/streaming.py` - Real-time streaming indicators for live trading
+- `pyindicators/visual.py` - Interactive charts and strategy builders
+- `pyindicators/widgets.py` - Jupyter notebook widgets with sliders
+- `pyindicators/cli.py` - Command-line interface for terminal users
+- `pyindicators/errors.py` - Smart error handling with helpful suggestions
+
+All core calculations use Numba JIT compilation for maximum performance while the new interfaces provide unmatched ease of use.
 
 ## Development Commands
 

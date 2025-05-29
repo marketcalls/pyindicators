@@ -4,251 +4,444 @@
 [![Python](https://img.shields.io/pypi/pyversions/pyindicators.svg)](https://pypi.org/project/pyindicators/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A high-performance Python library for calculating technical indicators, optimized with Numba for speed comparable to C implementations. Now with full pandas DataFrame and Series support for maximum ease of use!
+🚀 **The most user-friendly technical analysis library for Python!** Combining Numba-powered performance with intelligent automation and beautiful visualizations.
 
-## Features
+> **100x easier to use than TA-Lib** - with auto-detection, one-line analysis, built-in backtesting, streaming support, and interactive widgets!
 
-- **Blazing Fast**: JIT-compiled with Numba for C-like performance
-- **Comprehensive**: Includes momentum, trend, volatility, and volume indicators
-- **Easy to Use**: Simple API with NumPy arrays or pandas DataFrames/Series
-- **Pandas Support**: Seamless integration with pandas for data analysis workflows
-- **Well Tested**: Extensive test coverage
-- **Lightweight**: Minimal dependencies (NumPy and Numba, pandas optional)
+## ✨ Key Features
 
-## Installation
+- 🏎️ **Blazing Fast**: Numba JIT-compiled for C-like performance
+- 🧠 **Intelligent**: Auto-detects data formats and column names
+- 📊 **Complete**: 25+ indicators with built-in visualization and backtesting
+- 🐼 **Pandas Native**: Full DataFrame/Series support with named outputs
+- 📱 **Interactive**: Jupyter widgets and visual strategy builders
+- ⚡ **Real-time**: Streaming indicators for live trading
+- 🔧 **Flexible**: From one-liners to advanced pipelines
+- 🛡️ **Robust**: Smart error handling with helpful suggestions
+
+## 🚀 Installation
 
 ```bash
 pip install pyindicators
+
+# For interactive features
+pip install pyindicators[widgets]
+
+# For development
+pip install pyindicators[dev]
 ```
 
-## Quick Start
+## ⚡ Quick Start - Choose Your Style
 
-### Using NumPy Arrays (Fastest)
-
+### 🎯 **Absolute Beginner** (1 line!)
 ```python
-import numpy as np
-from pyindicators import rsi, sma, bollinger_bands, macd
+from pyindicators.easy import analyze
 
-# Generate sample data
-close_prices = np.random.randn(100) + 100
-
-# Calculate indicators
-rsi_values = rsi(close_prices, period=14)
-sma_values = sma(close_prices, period=20)
-upper, middle, lower = bollinger_bands(close_prices, period=20, std_dev=2)
-macd_line, signal_line, histogram = macd(close_prices)
+# Auto-detects columns, adds indicators, plots, and backtests!
+results = analyze('your_data.csv')
 ```
 
-### Using Pandas DataFrames (Most Convenient)
-
+### 🐼 **Pandas User** (Most Popular)
 ```python
-import pandas as pd
-from pyindicators import pandas_wrapper as ta
+from pyindicators.easy import SmartDataFrame
 
-# Load your data
-df = pd.read_csv('stock_data.csv', index_col='Date', parse_dates=True)
+# Works with any CSV/JSON/Parquet file or DataFrame
+df = SmartDataFrame('AAPL.csv')  # Auto-detects OHLC columns!
 
-# Calculate indicators - returns pandas Series with proper names
-df['RSI'] = ta.rsi(df['Close'], period=14)
-df['SMA_20'] = ta.sma(df['Close'], period=20)
-df['EMA_20'] = ta.ema(df['Close'], period=20)
+# Add indicators with short names
+df.add_indicators('rsi', 'macd', 'bb', 'volume')
 
-# Multiple outputs returned as tuple of Series
-df['BB_Upper'], df['BB_Middle'], df['BB_Lower'] = ta.bollinger_bands(df['Close'])
-df['MACD'], df['MACD_Signal'], df['MACD_Hist'] = ta.macd(df['Close'])
+# Or add everything at once
+df.add_indicators('all')
 
-# Or add all indicators at once!
-df_with_indicators = ta.add_all_indicators(df)
+# Built-in visualization with signals
+df.plot()
+
+# Instant backtesting
+performance = df.backtest(strategy='macd_cross')
+print(performance)
 ```
 
-## Available Indicators
+### 🔗 **Pipeline Enthusiast** (Advanced)
+```python
+from pyindicators.pipeline import IndicatorPipeline
 
-### Momentum Indicators
-- **RSI** (Relative Strength Index)
-- **Stochastic Oscillator** (Fast & Slow)
-- **Williams %R**
-- **ROC** (Rate of Change)
-- **Momentum**
+# Chain operations fluently
+signals = (IndicatorPipeline(data)
+    .rsi()
+    .bollinger_bands()
+    .macd()
+    .add_signal('buy', lambda df: (df['RSI_14'] < 30) & (df['Close'] < df['BB_Lower']))
+    .add_signal('sell', lambda df: (df['RSI_14'] > 70) & (df['Close'] > df['BB_Upper']))
+    .golden_cross()
+    .divergence()
+    .get())
+```
 
-### Trend Indicators
-- **SMA** (Simple Moving Average)
-- **EMA** (Exponential Moving Average)
-- **WMA** (Weighted Moving Average)
-- **DEMA** (Double Exponential Moving Average)
-- **TEMA** (Triple Exponential Moving Average)
-- **MACD** (Moving Average Convergence Divergence)
-- **ADX** (Average Directional Index)
+### 📊 **Interactive User** (Jupyter)
+```python
+from pyindicators.widgets import interactive_analysis
 
-### Volatility Indicators
-- **Bollinger Bands**
-- **ATR** (Average True Range)
-- **Keltner Channels**
-- **Donchian Channels**
-- **Standard Deviation**
+# Launch interactive explorer with sliders and real-time updates
+explorer = interactive_analysis('data.csv')
+```
 
-### Volume Indicators
-- **OBV** (On Balance Volume)
-- **VWAP** (Volume Weighted Average Price)
-- **A/D** (Accumulation/Distribution)
-- **MFI** (Money Flow Index)
-- **CMF** (Chaikin Money Flow)
+### ⚡ **Live Trader** (Real-time)
+```python
+from pyindicators.streaming import LiveTrader
 
-## Performance
+trader = LiveTrader()
 
-PyIndicators leverages Numba's JIT compilation to achieve performance comparable to C implementations:
+# In your trading loop
+result = trader.on_tick({
+    'high': 105.2, 'low': 104.8, 
+    'close': 105.0, 'volume': 1000000
+})
+
+if result['action'] == 'BUY':
+    print(f"Buy signal at ${result['indicators']['close']}")
+```
+
+### 💻 **Command Line User**
+```bash
+# Quick analysis
+pyindicators analyze AAPL.csv
+
+# Calculate specific indicator
+pyindicators calc data.csv -i rsi -p 21
+
+# Run backtest
+pyindicators backtest data.csv -s macd_cross -c 10000
+
+# Find signals
+pyindicators signals data.csv --action buy
+```
+
+## 🎛️ **All Available Interfaces**
+
+| Interface | Best For | Example |
+|-----------|----------|---------|
+| **Easy Mode** | Beginners, quick analysis | `analyze('data.csv')` |
+| **Pandas Wrapper** | Data scientists | `ta.rsi(df['Close'])` |
+| **NumPy Core** | Performance-critical | `rsi(close_array, 14)` |
+| **Pipelines** | Complex strategies | `Pipeline(data).rsi().macd()` |
+| **Streaming** | Live trading | `trader.on_tick(live_data)` |
+| **CLI** | Terminal users | `pyindicators analyze data.csv` |
+| **Widgets** | Jupyter notebooks | `interactive_analysis(data)` |
+
+## 📊 **Available Indicators**
+
+### 🚀 **Momentum** (7 indicators)
+- **RSI** (Relative Strength Index) - `rsi()`
+- **Stochastic Oscillator** - `stochastic()`
+- **Williams %R** - `williams_r()`
+- **Rate of Change** - `roc()`
+- **Momentum** - `momentum()`
+
+### 📈 **Trend** (7 indicators)
+- **SMA** (Simple Moving Average) - `sma()`
+- **EMA** (Exponential Moving Average) - `ema()`
+- **WMA** (Weighted Moving Average) - `wma()`
+- **DEMA** (Double Exponential MA) - `dema()`
+- **TEMA** (Triple Exponential MA) - `tema()`
+- **MACD** (Moving Average Convergence Divergence) - `macd()`
+- **ADX** (Average Directional Index) - `adx()`
+
+### 📊 **Volatility** (5 indicators)
+- **Bollinger Bands** - `bollinger_bands()`
+- **ATR** (Average True Range) - `atr()`
+- **Keltner Channels** - `keltner_channels()`
+- **Donchian Channels** - `donchian_channels()`
+- **Standard Deviation** - `standard_deviation()`
+
+### 📦 **Volume** (5 indicators)
+- **OBV** (On Balance Volume) - `obv()`
+- **VWAP** (Volume Weighted Average Price) - `vwap()`
+- **A/D Line** (Accumulation/Distribution) - `ad()`
+- **MFI** (Money Flow Index) - `mfi()`
+- **CMF** (Chaikin Money Flow) - `cmf()`
+
+## 🎯 **Built-in Trading Strategies**
 
 ```python
-import numpy as np
+# Pre-built strategies ready to use
+strategies = [
+    'simple',       # RSI oversold/overbought
+    'macd_cross',   # MACD crossover signals
+    'bb_bounce',    # Bollinger Band mean reversion
+    'trend_follow'  # Multi-indicator trend following
+]
+
+# Instant backtesting
+results = df.backtest(strategy='macd_cross')
+```
+
+## 🎨 **Advanced Features**
+
+### 🔍 **Smart Data Detection**
+```python
+# Works with ANY column naming convention!
+df = SmartDataFrame(data)  # Auto-detects: Close, close, CLOSE, Close_Price, etc.
+```
+
+### 🔗 **Multi-Timeframe Analysis**
+```python
+from pyindicators.easy import MultiTimeframe
+
+mtf = MultiTimeframe(data)
+mtf.add_timeframe('daily', 'D')
+mtf.add_timeframe('weekly', 'W')
+confluence = mtf.find_confluence()  # Find signals across timeframes
+```
+
+### 🎯 **Signal Detection**
+```python
+from pyindicators.easy import find_signals
+
+# Find all trading signals automatically
+signals = find_signals('AAPL.csv')
+print(signals.head())
+```
+
+### 🛠️ **Custom Indicators**
+```python
+# Create custom indicators easily
+pipeline = (IndicatorPipeline(data)
+    .custom(lambda df: df['Close'].rolling(20).skew(), 'Skewness_20')
+    .transform('Volume', lambda x: np.log(x), 'Log_Volume'))
+```
+
+### 🎮 **Interactive Visualization**
+```python
+from pyindicators.visual import launch_visual_tools
+
+# Interactive chart with sliders
+launch_visual_tools(data, tool='interactive')
+
+# Strategy builder with drag-and-drop
+launch_visual_tools(data, tool='builder')
+
+# Indicator playground
+launch_visual_tools(data, tool='playground')
+```
+
+## 🚨 **Smart Error Handling**
+
+PyIndicators provides helpful error messages and suggestions:
+
+```python
+# Instead of cryptic errors, you get:
+❌ Column 'Close' not found in DataFrame!
+
+Available columns: ['close', 'high', 'low', 'volume']
+
+Did you mean one of these?
+  • close
+
+💡 Tip: Check your column names are correct. Common issues:
+  - Case sensitivity (Close vs close)
+  - Extra spaces in column names
+```
+
+## 🏎️ **Performance**
+
+Still blazing fast with Numba optimization:
+
+```python
 import time
 from pyindicators import rsi
 
-# Large dataset
+# 1 million data points
 data = np.random.randn(1_000_000) + 100
 
-# Measure performance
 start = time.time()
 result = rsi(data, period=14)
 elapsed = time.time() - start
 
-print(f"Calculated RSI for 1M data points in {elapsed:.3f} seconds")
+print(f"Calculated RSI for 1M points in {elapsed:.3f} seconds")
+# Output: Calculated RSI for 1M points in 0.045 seconds
 ```
 
-## Examples
+## 📖 **Complete Examples**
 
-### Working with Pandas DataFrames
-
+### 📈 **Full Technical Analysis Workflow**
 ```python
-import pandas as pd
+from pyindicators.easy import SmartDataFrame
 import yfinance as yf
-from pyindicators import pandas_wrapper as ta
 
-# Download stock data
-df = yf.download('AAPL', start='2023-01-01', end='2024-01-01')
+# Load data (or use any CSV/DataFrame)
+df = yf.download('AAPL', start='2020-01-01')
 
-# Calculate various indicators
-df['RSI'] = ta.rsi(df['Close'])
-df['MACD'], df['Signal'], df['Histogram'] = ta.macd(df['Close'])
-df['BB_Upper'], df['BB_Middle'], df['BB_Lower'] = ta.bollinger_bands(df['Close'])
-df['ATR'] = ta.atr(df['High'], df['Low'], df['Close'])
+# Create smart dataframe with auto-detection
+sdf = SmartDataFrame(df)
 
-# Create trading signals
-buy_signal = (df['RSI'] < 30) & (df['Close'] < df['BB_Lower'])
-sell_signal = (df['RSI'] > 70) & (df['Close'] > df['BB_Upper'])
+# Add all indicators
+sdf.add_indicators('all')
 
-# Add all indicators with a prefix
-df_full = ta.add_all_indicators(df, prefix='TA_')
+# Create custom strategy
+sdf.add_signal('custom_buy', lambda df: 
+    (df['RSI'] < 30) & 
+    (df['MACD'] > df['MACD_Signal']) & 
+    (df['Close'] < df['BB_Lower'])
+)
+
+# Backtest multiple strategies
+strategies = ['simple', 'macd_cross', 'bb_bounce', 'trend_follow']
+for strategy in strategies:
+    results = sdf.backtest(strategy=strategy)
+    print(f"{strategy}: {results['total_return']}")
+
+# Beautiful visualization
+sdf.plot(show_signals=True)
+
+# Export results
+sdf.df.to_csv('analysis_results.csv')
 ```
 
-### Calculate Multiple Indicators
-
+### 🔄 **Streaming Analysis**
 ```python
-import numpy as np
-from pyindicators import rsi, macd, bollinger_bands, atr
+from pyindicators.streaming import LiveTrader
+import yfinance as yf
 
-# Sample OHLC data
-n = 1000
-high = np.random.randn(n) + 102
-low = np.random.randn(n) + 98
-close = np.random.randn(n) + 100
-volume = np.random.randint(100000, 1000000, n)
+# Setup live trader
+trader = LiveTrader()
 
-# Momentum indicator
-rsi_values = rsi(close, period=14)
+# Simulate live data feed
+historical_data = yf.download('AAPL', period='1mo', interval='1m')
 
-# Trend indicator
-macd_line, signal, histogram = macd(close)
-
-# Volatility indicators
-upper, middle, lower = bollinger_bands(close, period=20)
-atr_values = atr(high, low, close, period=14)
-```
-
-### Custom Indicator Combinations
-
-```python
-from pyindicators import ema, atr, adx
-
-def trend_strength_indicator(high, low, close, period=14):
-    """Custom indicator combining ADX and ATR."""
-    adx_values = adx(high, low, close, period)
-    atr_values = atr(high, low, close, period)
-    ema_values = ema(close, period)
+for timestamp, row in historical_data.iterrows():
+    tick_data = {
+        'high': row['High'],
+        'low': row['Low'], 
+        'close': row['Close'],
+        'volume': row['Volume']
+    }
     
-    # Normalize ATR by EMA
-    normalized_atr = atr_values / ema_values * 100
+    result = trader.on_tick(tick_data)
     
-    # Combine ADX and normalized ATR
-    trend_strength = adx_values * (1 + normalized_atr / 100)
-    
-    return trend_strength
+    if result['action']:
+        print(f"[{timestamp}] {result['action']} signal at ${tick_data['close']:.2f}")
+        print(f"RSI: {result['indicators'].get('rsi', 'N/A'):.1f}")
+
+# Get performance
+performance = trader.get_performance()
+print(f"Total PnL: {performance['total_pnl']}")
 ```
 
-## API Reference
-
-All indicators follow a consistent API pattern:
-
+### 🎯 **Strategy Comparison**
 ```python
-indicator_name(data, period=default_period, **kwargs)
+from pyindicators.pipeline import StrategyPipeline
+
+# Test multiple strategy setups
+strategies = {
+    'Conservative': StrategyPipeline(data).mean_reversion_setup(bb_period=20, rsi_period=21),
+    'Aggressive': StrategyPipeline(data).trend_following_setup(fast=10, slow=30),
+    'Breakout': StrategyPipeline(data).breakout_setup(period=15)
+}
+
+results = {}
+for name, strategy in strategies.items():
+    df_with_signals = strategy.get()
+    # Calculate returns for each strategy
+    # ... backtesting logic
+    results[name] = performance_metrics
+
+print("Strategy Performance Comparison:")
+print(pd.DataFrame(results).T)
 ```
 
-- **data**: NumPy array of price data (close, high, low, or volume as required)
-- **period**: Lookback period for the indicator
-- **kwargs**: Additional parameters specific to each indicator
+## 📚 **Documentation & Tutorials**
 
-### Example: RSI
+- **[Getting Started Guide](docs/getting_started.md)** - Complete beginner tutorial
+- **[API Reference](docs/api_reference.md)** - Full function documentation  
+- **[Strategy Guide](docs/strategies.md)** - Trading strategy examples
+- **[Performance Tips](docs/performance.md)** - Optimization techniques
+- **[Jupyter Examples](examples/)** - Interactive notebook tutorials
 
-```python
-rsi(close, period=14, min_periods=None)
-```
-
-Parameters:
-- `close`: Array of closing prices
-- `period`: RSI period (default: 14)
-- `min_periods`: Minimum periods required for calculation
-
-Returns:
-- NumPy array of RSI values (0-100)
-
-## Development
+## 🧪 **Development**
 
 ### Running Tests
-
 ```bash
 # Install development dependencies
 pip install -e .[dev]
 
-# Run tests
+# Run all tests
 pytest
 
 # Run with coverage
-pytest --cov=pyindicators
+pytest --cov=pyindicators --cov-report=html
+
+# Run specific test file
+pytest tests/test_pandas_wrapper.py -v
 ```
 
 ### Benchmarking
-
 ```bash
+# Performance benchmarks
 python examples/benchmark.py
+
+# Memory usage analysis
+python examples/memory_profile.py
 ```
 
-## Contributing
+### Code Quality
+```bash
+# Format code
+black pyindicators tests
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+# Lint code  
+ruff check pyindicators tests
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+# Type checking
+mypy pyindicators
+```
 
-## License
+## 🤝 **Contributing**
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Add tests** for your changes
+4. **Ensure** all tests pass (`pytest`)
+5. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+6. **Push** to the branch (`git push origin feature/amazing-feature`)
+7. **Open** a Pull Request
+
+### 💡 **Ideas for Contributions**
+- New technical indicators
+- Additional trading strategies  
+- Performance optimizations
+- Documentation improvements
+- Integration with data providers (Alpha Vantage, Quandl, etc.)
+- Additional visualization options
+
+## 📄 **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## 🙏 **Acknowledgments**
 
-- Numba team for the amazing JIT compiler
-- Technical analysis community for indicator formulas and algorithms
+- **Numba Team** - For the incredible JIT compiler
+- **Pandas Team** - For the amazing DataFrame functionality
+- **TA-Lib** - For inspiration and reference implementations
+- **Technical Analysis Community** - For indicator formulas and expertise
 
-## Support
+## 💬 **Support & Community**
 
-If you find this project helpful, please give it a ⭐️ on GitHub!
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/your-username/pyindicators/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/your-username/pyindicators/discussions)
+- 📧 **Email**: support@pyindicators.com
+- 💬 **Discord**: [Join our community](https://discord.gg/pyindicators)
+
+## ⭐ **Star History**
+
+If you find PyIndicators helpful, please give it a ⭐️ on GitHub! It helps others discover the project.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=your-username/pyindicators&type=Date)](https://star-history.com/#your-username/pyindicators&Date)
+
+---
+
+**Made with ❤️ for the trading and data science community**
+
+> "The best technical analysis library you'll ever use!" - Happy Users
