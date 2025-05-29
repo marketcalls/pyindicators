@@ -4,15 +4,16 @@
 [![Python](https://img.shields.io/pypi/pyversions/pyindicators.svg)](https://pypi.org/project/pyindicators/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A high-performance Python library for calculating technical indicators, optimized with Numba for speed comparable to C implementations.
+A high-performance Python library for calculating technical indicators, optimized with Numba for speed comparable to C implementations. Now with full pandas DataFrame and Series support for maximum ease of use!
 
 ## Features
 
 - **Blazing Fast**: JIT-compiled with Numba for C-like performance
 - **Comprehensive**: Includes momentum, trend, volatility, and volume indicators
-- **Easy to Use**: Simple API with NumPy array inputs/outputs
+- **Easy to Use**: Simple API with NumPy arrays or pandas DataFrames/Series
+- **Pandas Support**: Seamless integration with pandas for data analysis workflows
 - **Well Tested**: Extensive test coverage
-- **Lightweight**: Minimal dependencies (NumPy and Numba)
+- **Lightweight**: Minimal dependencies (NumPy and Numba, pandas optional)
 
 ## Installation
 
@@ -21,6 +22,8 @@ pip install pyindicators
 ```
 
 ## Quick Start
+
+### Using NumPy Arrays (Fastest)
 
 ```python
 import numpy as np
@@ -34,6 +37,28 @@ rsi_values = rsi(close_prices, period=14)
 sma_values = sma(close_prices, period=20)
 upper, middle, lower = bollinger_bands(close_prices, period=20, std_dev=2)
 macd_line, signal_line, histogram = macd(close_prices)
+```
+
+### Using Pandas DataFrames (Most Convenient)
+
+```python
+import pandas as pd
+from pyindicators import pandas_wrapper as ta
+
+# Load your data
+df = pd.read_csv('stock_data.csv', index_col='Date', parse_dates=True)
+
+# Calculate indicators - returns pandas Series with proper names
+df['RSI'] = ta.rsi(df['Close'], period=14)
+df['SMA_20'] = ta.sma(df['Close'], period=20)
+df['EMA_20'] = ta.ema(df['Close'], period=20)
+
+# Multiple outputs returned as tuple of Series
+df['BB_Upper'], df['BB_Middle'], df['BB_Lower'] = ta.bollinger_bands(df['Close'])
+df['MACD'], df['MACD_Signal'], df['MACD_Hist'] = ta.macd(df['Close'])
+
+# Or add all indicators at once!
+df_with_indicators = ta.add_all_indicators(df)
 ```
 
 ## Available Indicators
@@ -89,6 +114,30 @@ print(f"Calculated RSI for 1M data points in {elapsed:.3f} seconds")
 ```
 
 ## Examples
+
+### Working with Pandas DataFrames
+
+```python
+import pandas as pd
+import yfinance as yf
+from pyindicators import pandas_wrapper as ta
+
+# Download stock data
+df = yf.download('AAPL', start='2023-01-01', end='2024-01-01')
+
+# Calculate various indicators
+df['RSI'] = ta.rsi(df['Close'])
+df['MACD'], df['Signal'], df['Histogram'] = ta.macd(df['Close'])
+df['BB_Upper'], df['BB_Middle'], df['BB_Lower'] = ta.bollinger_bands(df['Close'])
+df['ATR'] = ta.atr(df['High'], df['Low'], df['Close'])
+
+# Create trading signals
+buy_signal = (df['RSI'] < 30) & (df['Close'] < df['BB_Lower'])
+sell_signal = (df['RSI'] > 70) & (df['Close'] > df['BB_Upper'])
+
+# Add all indicators with a prefix
+df_full = ta.add_all_indicators(df, prefix='TA_')
+```
 
 ### Calculate Multiple Indicators
 

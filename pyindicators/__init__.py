@@ -2,6 +2,7 @@
 PyIndicators - High-performance technical indicators library with Numba optimization.
 
 A fast and efficient library for calculating technical indicators used in financial analysis.
+Supports both NumPy arrays and pandas DataFrames/Series for maximum flexibility.
 """
 
 __version__ = "0.1.0"
